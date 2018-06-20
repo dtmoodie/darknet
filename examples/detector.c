@@ -597,12 +597,19 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
         network_predict(net, X);
         printf("%s: Predicted in %f seconds.\n", input, what_time_is_it_now()-time);
         int nboxes = 0;
+        printf("asdf1\n");
         detection *dets = get_network_boxes(net, im.w, im.h, thresh, hier_thresh, 0, 1, &nboxes);
+        if(dets == NULL)
+            return;
         //printf("%d\n", nboxes);
         //if (nms) do_nms_obj(boxes, probs, l.w*l.h*l.n, l.classes, nms);
+        printf("NMS");
         if (nms) do_nms_sort(dets, nboxes, l.classes, nms);
+        printf("Draw");
         draw_detections(im, dets, nboxes, thresh, names, alphabet, l.classes);
+        printf("free_detections");
         free_detections(dets, nboxes);
+        printf("save_image");
         if(outfile){
             save_image(im, outfile);
         }
