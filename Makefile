@@ -4,7 +4,7 @@ OPENCV=0
 OPENMP=1
 DEBUG=0
 
-ARCH= -gencode arch=compute_32,code=sm_32 \
+ARCH= -gencode arch=compute_32,code=sm_32
 
 
 # This is what I use, uncomment if you know your arch and want to specify
