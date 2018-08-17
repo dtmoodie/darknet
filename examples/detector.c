@@ -601,15 +601,17 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
         if(dets == NULL)
         {
             printf("Zero detections in this image\n");
-            return;
+        }else
+        {
+            printf("NMS\n");
+            if (nms) do_nms_sort(dets, nboxes, l.classes, nms);
+            printf("Draw\n");
+            draw_detections(im, dets, nboxes, thresh, names, alphabet, l.classes);
+            printf("free_detections");
+            free_detections(dets, nboxes);
+            printf("save_image");
         }
-        printf("NMS\n");
-        if (nms) do_nms_sort(dets, nboxes, l.classes, nms);
-        printf("Draw\n");
-        draw_detections(im, dets, nboxes, thresh, names, alphabet, l.classes);
-        printf("free_detections");
-        free_detections(dets, nboxes);
-        printf("save_image");
+
         if(outfile){
             save_image(im, outfile);
         }
