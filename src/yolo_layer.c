@@ -38,7 +38,7 @@ layer make_yolo_layer(int batch, int w, int h, int n, int total, int *mask, int 
     l.bias_updates = calloc(n*2, sizeof(float));
     l.outputs = h*w*n*(classes + 4 + 1);
     l.inputs = l.outputs;
-    l.truths = 90*(4 + 1);
+    l.truths = 2000*(4 + 1);
     l.delta = calloc(batch*l.outputs, sizeof(float));
     l.output = calloc(batch*l.outputs, sizeof(float));
     for(i = 0; i < total*2; ++i){
@@ -196,6 +196,7 @@ void forward_yolo_layer(const layer l, network net)
             box truth = float_to_box(net.truth + t*(4 + 1) + b*l.truths, 1);
 
             if(!truth.x) break;
+            if(truth.x < 0 || truth.x > 1) break;
             float best_iou = 0;
             int best_n = 0;
             i = (truth.x * l.w);
