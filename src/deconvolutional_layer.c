@@ -11,8 +11,8 @@
 #include <time.h>
 
 
-static size_t get_workspace_size(layer l){
-    return (size_t)l.h*l.w*l.size*l.size*l.n*sizeof(float);
+static uint64_t get_workspace_size(layer l){
+    return (uint64_t)l.h*l.w*l.size*l.size*l.n*sizeof(float);
 }
 
 void bilinear_init(layer l)

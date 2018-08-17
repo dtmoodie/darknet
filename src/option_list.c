@@ -51,8 +51,8 @@ metadata get_metadata(char *file)
 
 int read_option(char *s, list *options)
 {
-    size_t i;
-    size_t len = strlen(s);
+    uint64_t i;
+    uint64_t len = strlen(s);
     char *val = 0;
     for(i = 0; i < len; ++i){
         if(s[i] == '='){

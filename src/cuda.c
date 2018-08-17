@@ -48,10 +48,10 @@ void check_error(cudaError_t status)
     } 
 }
 
-dim3 cuda_gridsize(size_t n){
-    size_t k = (n-1) / BLOCK + 1;
-    size_t x = k;
-    size_t y = 1;
+dim3 cuda_gridsize(uint64_t n){
+    uint64_t k = (n-1) / BLOCK + 1;
+    uint64_t x = k;
+    uint64_t y = 1;
     if(x > 65535){
         x = ceil(sqrt(k));
         y = (n-1)/(x*BLOCK) + 1;
@@ -87,10 +87,10 @@ cublasHandle_t blas_handle()
     return handle[i];
 }
 
-float *cuda_make_array(float *x, size_t n)
+float *cuda_make_array(float *x, uint64_t n)
 {
     float *x_gpu;
-    size_t size = sizeof(float)*n;
+    uint64_t size = sizeof(float)*n;
     cudaError_t status = cudaMalloc((void **)&x_gpu, size);
     check_error(status);
     if(x){
@@ -103,7 +103,7 @@ float *cuda_make_array(float *x, size_t n)
     return x_gpu;
 }
 
-void cuda_random(float *x_gpu, size_t n)
+void cuda_random(float *x_gpu, uint64_t n)
 {
     static curandGenerator_t gen[16];
     static int init[16] = {0};
@@ -117,7 +117,7 @@ void cuda_random(float *x_gpu, size_t n)
     check_error(cudaPeekAtLastError());
 }
 
-float cuda_compare(float *x_gpu, float *x, size_t n, char *s)
+float cuda_compare(float *x_gpu, float *x, uint64_t n, char *s)
 {
     float *tmp = calloc(n, sizeof(float));
     cuda_pull_array(x_gpu, tmp, n);
@@ -130,10 +130,10 @@ float cuda_compare(float *x_gpu, float *x, size_t n, char *s)
     return err;
 }
 
-int *cuda_make_int_array(int *x, size_t n)
+int *cuda_make_int_array(int *x, uint64_t n)
 {
     int *x_gpu;
-    size_t size = sizeof(int)*n;
+    uint64_t size = sizeof(int)*n;
     cudaError_t status = cudaMalloc((void **)&x_gpu, size);
     check_error(status);
     if(x){
@@ -150,21 +150,21 @@ void cuda_free(float *x_gpu)
     check_error(status);
 }
 
-void cuda_push_array(float *x_gpu, float *x, size_t n)
+void cuda_push_array(float *x_gpu, float *x, uint64_t n)
 {
-    size_t size = sizeof(float)*n;
+    uint64_t size = sizeof(float)*n;
     cudaError_t status = cudaMemcpy(x_gpu, x, size, cudaMemcpyHostToDevice);
     check_error(status);
 }
 
-void cuda_pull_array(float *x_gpu, float *x, size_t n)
+void cuda_pull_array(float *x_gpu, float *x, uint64_t n)
 {
-    size_t size = sizeof(float)*n;
+    uint64_t size = sizeof(float)*n;
     cudaError_t status = cudaMemcpy(x, x_gpu, size, cudaMemcpyDeviceToHost);
     check_error(status);
 }
 
-float cuda_mag_array(float *x_gpu, size_t n)
+float cuda_mag_array(float *x_gpu, uint64_t n)
 {
     float *temp = calloc(n, sizeof(float));
     cuda_pull_array(x_gpu, temp, n);

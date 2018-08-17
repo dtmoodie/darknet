@@ -749,7 +749,7 @@ network *parse_network_cfg(char *filename)
     params.time_steps = net->time_steps;
     params.net = net;
 
-    size_t workspace_size = 0;
+    uint64_t workspace_size = 0;
     n = n->next;
     int count = 0;
     free_section(s);
@@ -1006,7 +1006,7 @@ void save_weights_upto(network *net, char *filename, int cutoff)
     fwrite(&major, sizeof(int), 1, fp);
     fwrite(&minor, sizeof(int), 1, fp);
     fwrite(&revision, sizeof(int), 1, fp);
-    fwrite(net->seen, sizeof(size_t), 1, fp);
+    fwrite(net->seen, sizeof(uint64_t), 1, fp);
 
     int i;
     for(i = 0; i < net->n && i < cutoff; ++i){
@@ -1218,7 +1218,7 @@ void load_weights_upto(network *net, char *filename, int start, int cutoff)
     fread(&minor, sizeof(int), 1, fp);
     fread(&revision, sizeof(int), 1, fp);
     if ((major*10 + minor) >= 2 && major < 1000 && minor < 1000){
-        fread(net->seen, sizeof(size_t), 1, fp);
+        fread(net->seen, sizeof(uint64_t), 1, fp);
     } else {
         int iseen = 0;
         fread(&iseen, sizeof(int), 1, fp);

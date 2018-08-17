@@ -21,10 +21,10 @@ unsigned char **load_files(char *filename, int *n)
     return contents;
 }
 
-int *read_tokenized_data(char *filename, size_t *read)
+int *read_tokenized_data(char *filename, uint64_t *read)
 {
-    size_t size = 512;
-    size_t count = 0;
+    uint64_t size = 512;
+    uint64_t count = 0;
     FILE *fp = fopen(filename, "r");
     int *d = calloc(size, sizeof(int));
     int n, one;
@@ -44,10 +44,10 @@ int *read_tokenized_data(char *filename, size_t *read)
     return d;
 }
 
-char **read_tokens(char *filename, size_t *read)
+char **read_tokens(char *filename, uint64_t *read)
 {
-    size_t size = 512;
-    size_t count = 0;
+    uint64_t size = 512;
+    uint64_t count = 0;
     FILE *fp = fopen(filename, "r");
     char **d = calloc(size, sizeof(char *));
     char *line;
@@ -67,7 +67,7 @@ char **read_tokens(char *filename, size_t *read)
 }
 
 
-float_pair get_rnn_token_data(int *tokens, size_t *offsets, int characters, size_t len, int batch, int steps)
+float_pair get_rnn_token_data(int *tokens, uint64_t *offsets, int characters, uint64_t len, int batch, int steps)
 {
     float *x = calloc(batch * steps * characters, sizeof(float));
     float *y = calloc(batch * steps * characters, sizeof(float));
@@ -93,7 +93,7 @@ float_pair get_rnn_token_data(int *tokens, size_t *offsets, int characters, size
     return p;
 }
 
-float_pair get_seq2seq_data(char **source, char **dest, int n, int characters, size_t len, int batch, int steps)
+float_pair get_seq2seq_data(char **source, char **dest, int n, int characters, uint64_t len, int batch, int steps)
 {
     int i,j;
     float *x = calloc(batch * steps * characters, sizeof(float));
@@ -124,7 +124,7 @@ float_pair get_seq2seq_data(char **source, char **dest, int n, int characters, s
     return p;
 }
 
-float_pair get_rnn_data(unsigned char *text, size_t *offsets, int characters, size_t len, int batch, int steps)
+float_pair get_rnn_data(unsigned char *text, uint64_t *offsets, int characters, uint64_t len, int batch, int steps)
 {
     float *x = calloc(batch * steps * characters, sizeof(float));
     float *y = calloc(batch * steps * characters, sizeof(float));
@@ -159,7 +159,7 @@ void train_char_rnn(char *cfgfile, char *weightfile, char *filename, int clear, 
     srand(time(0));
     unsigned char *text = 0;
     int *tokens = 0;
-    size_t size;
+    uint64_t size;
     if(tokenized){
         tokens = read_tokenized_data(filename, &size);
     } else {
@@ -181,10 +181,10 @@ void train_char_rnn(char *cfgfile, char *weightfile, char *filename, int clear, 
     int i = (*net->seen)/net->batch;
 
     int streams = batch/steps;
-    size_t *offsets = calloc(streams, sizeof(size_t));
+    uint64_t *offsets = calloc(streams, sizeof(uint64_t));
     int j;
     for(j = 0; j < streams; ++j){
-        offsets[j] = rand_size_t()%size;
+        offsets[j] = rand_uint64_t()%size;
     }
 
     clock_t time;
@@ -206,14 +206,14 @@ void train_char_rnn(char *cfgfile, char *weightfile, char *filename, int clear, 
         if (avg_loss < 0) avg_loss = loss;
         avg_loss = avg_loss*.9 + loss*.1;
 
-        size_t chars = get_current_batch(net)*batch;
+        uint64_t chars = get_current_batch(net)*batch;
         fprintf(stderr, "%d: %f, %f avg, %f rate, %lf seconds, %f epochs\n", i, loss, avg_loss, get_current_rate(net), sec(clock()-time), (float) chars/size);
 
         for(j = 0; j < streams; ++j){
             //printf("%d\n", j);
             if(rand()%64 == 0){
                 //fprintf(stderr, "Reset\n");
-                offsets[j] = rand_size_t()%size;
+                offsets[j] = rand_uint64_t()%size;
                 reset_network_state(net, j);
             }
         }
@@ -246,7 +246,7 @@ void test_char_rnn(char *cfgfile, char *weightfile, int num, char *seed, float t
 {
     char **tokens = 0;
     if(token_file){
-        size_t n;
+        uint64_t n;
         tokens = read_tokens(token_file, &n);
     }
 
@@ -300,7 +300,7 @@ void test_tactic_rnn_multi(char *cfgfile, char *weightfile, int num, float temp,
 {
     char **tokens = 0;
     if(token_file){
-        size_t n;
+        uint64_t n;
         tokens = read_tokens(token_file, &n);
     }
 
@@ -345,7 +345,7 @@ void test_tactic_rnn(char *cfgfile, char *weightfile, int num, float temp, int r
 {
     char **tokens = 0;
     if(token_file){
-        size_t n;
+        uint64_t n;
         tokens = read_tokens(token_file, &n);
     }
 

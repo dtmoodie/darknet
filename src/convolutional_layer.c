@@ -83,11 +83,11 @@ image get_convolutional_delta(convolutional_layer l)
     return float_to_image(l.out_w,l.out_h,l.out_c,l.delta);
 }
 
-static size_t get_workspace_size(layer l){
+static uint64_t get_workspace_size(layer l){
 #ifdef CUDNN
     if(gpu_index >= 0){
-        size_t most = 0;
-        size_t s = 0;
+        uint64_t most = 0;
+        uint64_t s = 0;
         cudnnGetConvolutionForwardWorkspaceSize(cudnn_handle(),
                 l.srcTensorDesc,
                 l.weightDesc,
@@ -99,7 +99,7 @@ static size_t get_workspace_size(layer l){
         return most;
     }
 #endif
-    return (size_t)l.out_h*l.out_w*l.size*l.size*l.c/l.groups*sizeof(float);
+    return (uint64_t)l.out_h*l.out_w*l.size*l.size*l.c/l.groups*sizeof(float);
 }
 
 #ifdef GPU

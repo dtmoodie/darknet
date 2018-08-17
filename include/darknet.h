@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
+#include <stdint.h>
 
 #define SECRET_NUM -1234
 extern int gpu_index;
@@ -328,7 +329,7 @@ struct layer{
 
     tree *softmax_tree;
 
-    size_t workspace_size;
+    uint64_t workspace_size;
 
 #ifdef GPU
     int *indexes_gpu;
@@ -427,7 +428,7 @@ typedef enum {
 typedef struct network{
     int n;
     int batch;
-    size_t *seen;
+    uint64_t *seen;
     int *t;
     float epoch;
     int subdivisions;
@@ -628,10 +629,10 @@ void copy_gpu(int N, float * X, int INCX, float * Y, int INCY);
 
 void cuda_set_device(int n);
 void cuda_free(float *x_gpu);
-float *cuda_make_array(float *x, size_t n);
-void cuda_pull_array(float *x_gpu, float *x, size_t n);
-float cuda_mag_array(float *x_gpu, size_t n);
-void cuda_push_array(float *x_gpu, float *x, size_t n);
+float *cuda_make_array(float *x, uint64_t n);
+void cuda_pull_array(float *x_gpu, float *x, uint64_t n);
+float cuda_mag_array(float *x_gpu, uint64_t n);
+void cuda_push_array(float *x_gpu, float *x, uint64_t n);
 
 void forward_network_gpu(network *net);
 void backward_network_gpu(network *net);
@@ -709,7 +710,7 @@ void draw_box_width(image a, int x1, int y1, int x2, int y2, int w, float r, flo
 float get_current_rate(network *net);
 void composite_3d(char *f1, char *f2, char *out, int delta);
 data load_data_old(char **paths, int n, int m, char **labels, int k, int w, int h);
-size_t get_current_batch(network *net);
+uint64_t get_current_batch(network *net);
 void constrain_image(image im);
 image get_network_image_layer(network *net, int i);
 layer get_network_output_layer(network *net);
@@ -791,7 +792,7 @@ float mean_array(float *a, int n);
 float sum_array(float *a, int n);
 void normalize_array(float *a, int n);
 int *read_intlist(char *s, int *n, int d);
-size_t rand_size_t();
+uint64_t rand_uint64_t();
 float rand_normal();
 float rand_uniform(float min, float max);
 

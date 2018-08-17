@@ -117,7 +117,7 @@ __global__ void levels_image_kernel(float *image, float *rand, int batch, int w,
     exposure = r2*(exposure - 1) + 1;
     exposure = (r3 > .5f) ? 1.f/exposure : exposure;
 
-    size_t offset = id * h * w * 3;
+    uint64_t offset = id * h * w * 3;
     image += offset;
     float r = image[x + w*(y + h*0)];
     float g = image[x + w*(y + h*1)];

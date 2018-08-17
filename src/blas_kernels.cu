@@ -211,7 +211,7 @@ __global__ void normalize_delta_kernel(int N, float *x, float *mean, float *vari
 
 extern "C" void normalize_delta_gpu(float *x, float *mean, float *variance, float *mean_delta, float *variance_delta, int batch, int filters, int spatial, float *delta)
 {
-    size_t N = batch*filters*spatial;
+    uint64_t N = batch*filters*spatial;
     normalize_delta_kernel<<<cuda_gridsize(N), BLOCK>>>(N, x, mean, variance, mean_delta, variance_delta, batch, filters, spatial, delta);
     check_error(cudaPeekAtLastError());
 }
@@ -464,7 +464,7 @@ __global__ void mul_kernel(int N, float *X, int INCX, float *Y, int INCY)
 
 extern "C" void normalize_gpu(float *x, float *mean, float *variance, int batch, int filters, int spatial)
 {
-    size_t N = batch*filters*spatial;
+    uint64_t N = batch*filters*spatial;
     normalize_kernel<<<cuda_gridsize(N), BLOCK>>>(N, x, mean, variance, batch, filters, spatial);
     check_error(cudaPeekAtLastError());
 }
@@ -493,7 +493,7 @@ __global__ void l2norm_kernel(int N, float *x, float *dx, int batch, int filters
 
 extern "C" void l2normalize_gpu(float *x, float *dx, int batch, int filters, int spatial)
 {
-    size_t N = batch*spatial;
+    uint64_t N = batch*spatial;
     l2norm_kernel<<<cuda_gridsize(N), BLOCK>>>(N, x, dx, batch, filters, spatial);
     check_error(cudaPeekAtLastError());
 }
@@ -1004,9 +1004,9 @@ extern "C" void softmax_gpu(float *input, int n, int batch, int batch_offset, in
 }
 
 
-__global__ void upsample_kernel(size_t N, float *x, int w, int h, int c, int batch, int stride, int forward, float scale, float *out)
+__global__ void upsample_kernel(uint64_t N, float *x, int w, int h, int c, int batch, int stride, int forward, float scale, float *out)
 {
-    size_t i = (blockIdx.x + blockIdx.y*gridDim.x) * blockDim.x + threadIdx.x;
+    uint64_t i = (blockIdx.x + blockIdx.y*gridDim.x) * blockDim.x + threadIdx.x;
     if(i >= N) return;
     int out_index = i;
     int out_w = i%(w*stride);
@@ -1029,7 +1029,7 @@ __global__ void upsample_kernel(size_t N, float *x, int w, int h, int c, int bat
 }
 extern "C" void upsample_gpu(float *in, int w, int h, int c, int batch, int stride, int forward, float scale, float *out)
 {
-    size_t size = w*h*c*batch*stride*stride;
+    uint64_t size = w*h*c*batch*stride*stride;
     upsample_kernel<<<cuda_gridsize(size), BLOCK>>>(size, in, w, h, c, batch, stride, forward, scale, out);
     check_error(cudaPeekAtLastError());
 }

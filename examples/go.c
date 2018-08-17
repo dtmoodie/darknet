@@ -18,7 +18,7 @@ typedef struct {
 char *fgetgo(FILE *fp)
 {
     if(feof(fp)) return 0;
-    size_t size = 96;
+    uint64_t size = 96;
     char *line = malloc(size*sizeof(char));
     if(size != fread(line, sizeof(char), size, fp)){
         free(line);

@@ -71,23 +71,23 @@ int *read_map(char *filename)
     return map;
 }
 
-void sorta_shuffle(void *arr, size_t n, size_t size, size_t sections)
+void sorta_shuffle(void *arr, uint64_t n, uint64_t size, uint64_t sections)
 {
-    size_t i;
+    uint64_t i;
     for(i = 0; i < sections; ++i){
-        size_t start = n*i/sections;
-        size_t end = n*(i+1)/sections;
-        size_t num = end-start;
+        uint64_t start = n*i/sections;
+        uint64_t end = n*(i+1)/sections;
+        uint64_t num = end-start;
         shuffle(arr+(start*size), num, size);
     }
 }
 
-void shuffle(void *arr, size_t n, size_t size)
+void shuffle(void *arr, uint64_t n, uint64_t size)
 {
-    size_t i;
+    uint64_t i;
     void *swp = calloc(1, size);
     for(i = 0; i < n-1; ++i){
-        size_t j = i + rand()/(RAND_MAX / (n-i)+1);
+        uint64_t j = i + rand()/(RAND_MAX / (n-i)+1);
         memcpy(swp,          arr+(j*size), size);
         memcpy(arr+(j*size), arr+(i*size), size);
         memcpy(arr+(i*size), swp,          size);
@@ -260,7 +260,7 @@ void error(const char *s)
 unsigned char *read_file(char *filename)
 {
     FILE *fp = fopen(filename, "rb");
-    size_t size;
+    uint64_t size;
 
     fseek(fp, 0, SEEK_END); 
     size = ftell(fp);
@@ -286,8 +286,8 @@ void file_error(char *s)
 
 list *split_str(char *s, char delim)
 {
-    size_t i;
-    size_t len = strlen(s);
+    uint64_t i;
+    uint64_t len = strlen(s);
     list *l = make_list();
     list_insert(l, s);
     for(i = 0; i < len; ++i){
@@ -301,9 +301,9 @@ list *split_str(char *s, char delim)
 
 void strip(char *s)
 {
-    size_t i;
-    size_t len = strlen(s);
-    size_t offset = 0;
+    uint64_t i;
+    uint64_t len = strlen(s);
+    uint64_t offset = 0;
     for(i = 0; i < len; ++i){
         char c = s[i];
         if(c==' '||c=='\t'||c=='\n') ++offset;
@@ -314,9 +314,9 @@ void strip(char *s)
 
 void strip_char(char *s, char bad)
 {
-    size_t i;
-    size_t len = strlen(s);
-    size_t offset = 0;
+    uint64_t i;
+    uint64_t len = strlen(s);
+    uint64_t offset = 0;
     for(i = 0; i < len; ++i){
         char c = s[i];
         if(c==bad) ++offset;
@@ -335,14 +335,14 @@ void free_ptrs(void **ptrs, int n)
 char *fgetl(FILE *fp)
 {
     if(feof(fp)) return 0;
-    size_t size = 512;
+    uint64_t size = 512;
     char *line = malloc(size*sizeof(char));
     if(!fgets(line, size, fp)){
         free(line);
         return 0;
     }
 
-    size_t curr = strlen(line);
+    uint64_t curr = strlen(line);
 
     while((line[curr-1] != '\n') && !feof(fp)){
         if(curr == size-1){
@@ -353,7 +353,7 @@ char *fgetl(FILE *fp)
                 malloc_error();
             }
         }
-        size_t readsize = size-curr;
+        uint64_t readsize = size-curr;
         if(readsize > INT_MAX) readsize = INT_MAX-1;
         fgets(&line[curr], readsize, fp);
         curr = strlen(line);
@@ -377,9 +377,9 @@ void write_int(int fd, int n)
     if(next <= 0) error("read failed");
 }
 
-int read_all_fail(int fd, char *buffer, size_t bytes)
+int read_all_fail(int fd, char *buffer, uint64_t bytes)
 {
-    size_t n = 0;
+    uint64_t n = 0;
     while(n < bytes){
         int next = read(fd, buffer + n, bytes-n);
         if(next <= 0) return 1;
@@ -388,20 +388,20 @@ int read_all_fail(int fd, char *buffer, size_t bytes)
     return 0;
 }
 
-int write_all_fail(int fd, char *buffer, size_t bytes)
+int write_all_fail(int fd, char *buffer, uint64_t bytes)
 {
-    size_t n = 0;
+    uint64_t n = 0;
     while(n < bytes){
-        size_t next = write(fd, buffer + n, bytes-n);
+        uint64_t next = write(fd, buffer + n, bytes-n);
         if(next <= 0) return 1;
         n += next;
     }
     return 0;
 }
 
-void read_all(int fd, char *buffer, size_t bytes)
+void read_all(int fd, char *buffer, uint64_t bytes)
 {
-    size_t n = 0;
+    uint64_t n = 0;
     while(n < bytes){
         int next = read(fd, buffer + n, bytes-n);
         if(next <= 0) error("read failed");
@@ -409,11 +409,11 @@ void read_all(int fd, char *buffer, size_t bytes)
     }
 }
 
-void write_all(int fd, char *buffer, size_t bytes)
+void write_all(int fd, char *buffer, uint64_t bytes)
 {
-    size_t n = 0;
+    uint64_t n = 0;
     while(n < bytes){
-        size_t next = write(fd, buffer + n, bytes-n);
+        uint64_t next = write(fd, buffer + n, bytes-n);
         if(next <= 0) error("write failed");
         n += next;
     }
@@ -683,16 +683,16 @@ float rand_normal()
    }
  */
 
-size_t rand_size_t()
+uint64_t rand_uint64_t()
 {
-    return  ((size_t)(rand()&0xff) << 56) | 
-        ((size_t)(rand()&0xff) << 48) |
-        ((size_t)(rand()&0xff) << 40) |
-        ((size_t)(rand()&0xff) << 32) |
-        ((size_t)(rand()&0xff) << 24) |
-        ((size_t)(rand()&0xff) << 16) |
-        ((size_t)(rand()&0xff) << 8) |
-        ((size_t)(rand()&0xff) << 0);
+    return  ((uint64_t)(rand()&0xff) << 56) | 
+        ((uint64_t)(rand()&0xff) << 48) |
+        ((uint64_t)(rand()&0xff) << 40) |
+        ((uint64_t)(rand()&0xff) << 32) |
+        ((uint64_t)(rand()&0xff) << 24) |
+        ((uint64_t)(rand()&0xff) << 16) |
+        ((uint64_t)(rand()&0xff) << 8) |
+        ((uint64_t)(rand()&0xff) << 0);
 }
 
 float rand_uniform(float min, float max)

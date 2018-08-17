@@ -170,7 +170,7 @@ extern "C" void smooth_layer(layer l, int size, float rate)
     int w = l.out_w;
     int c = l.out_c;
 
-    size_t n = h*w*c*l.batch;
+    uint64_t n = h*w*c*l.batch;
 
     smooth_kernel<<<cuda_gridsize(n), BLOCK>>>(l.output_gpu, n, l.w, l.h, l.c, size, rate, l.delta_gpu);
     check_error(cudaPeekAtLastError());

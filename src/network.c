@@ -60,9 +60,9 @@ network *load_network(char *cfg, char *weights, int clear)
     return net;
 }
 
-size_t get_current_batch(network *net)
+uint64_t get_current_batch(network *net)
 {
-    size_t batch_num = (*net->seen)/(net->batch*net->subdivisions);
+    uint64_t batch_num = (*net->seen)/(net->batch*net->subdivisions);
     return batch_num;
 }
 
@@ -89,7 +89,7 @@ void reset_rnn(network *net)
 
 float get_current_rate(network *net)
 {
-    size_t batch_num = get_current_batch(net);
+    uint64_t batch_num = get_current_batch(net);
     int i;
     float rate;
     if (batch_num < net->burn_in) return net->learning_rate * pow((float)batch_num / net->burn_in, net->power);
@@ -179,7 +179,7 @@ network *make_network(int n)
     network *net = calloc(1, sizeof(network));
     net->n = n;
     net->layers = calloc(net->n, sizeof(layer));
-    net->seen = calloc(1, sizeof(size_t));
+    net->seen = calloc(1, sizeof(uint64_t));
     net->t    = calloc(1, sizeof(int));
     net->cost = calloc(1, sizeof(float));
     return net;
@@ -366,7 +366,7 @@ int resize_network(network *net, int w, int h)
     net->w = w;
     net->h = h;
     int inputs = 0;
-    size_t workspace_size = 0;
+    uint64_t workspace_size = 0;
     //fprintf(stderr, "Resizing to %d x %d...\n", w, h);
     //fflush(stderr);
     for (i = 0; i < net->n; ++i){
